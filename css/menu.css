@@ -1,0 +1,126 @@
+.menu-content {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  list-style: none;
+  margin: 0;
+  padding: .25em 0;
+  width: 100%;
+}
+
+.menu-content .menu-item {
+  margin-bottom: .25em;
+}
+
+.menu-content .menu-item:last-child {
+  margin-bottom: 0;
+}
+
+.menu-item {
+  position: relative;
+  display: inline-block;
+  list-style-type: none;
+  border-radius: 0.325em;
+  padding: 0;
+  margin: 0 .325em;
+  color: var(--color-foreground);
+  z-index: 1;
+}
+
+.menu-item:hover {
+  color: var(--color-on-primary);
+}
+
+.menu-item:hover::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--color-primary);
+  opacity: 0.8;
+  z-index: -1;
+  border-radius: 0.325em;
+}
+
+.menu-item:has(.menu-item-button:disabled):hover::before {
+  opacity: 0.4;
+}
+
+.menu-item-button {
+  font-weight: 500;
+  width: 100%;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  border: none;
+  margin: 0;
+  padding: .25em 1em;
+  background: none;
+  line-height: 2em;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: inherit;
+}
+
+.menu-item-button:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.menu-item-button > svg {
+  flex: none;
+  margin-right: .5em;
+}
+
+.menu-item-label {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu-item-checkmark {
+  font-size: 1em;
+  display: inline-block;
+  transform: rotate(15deg);
+}
+
+.menu-separator {
+  display: inline-block;
+  position: relative;
+  height: 1px;
+  background-color: transparent;
+  border-color: var(--color-dim-foreground);
+  border-style: solid;
+  border-width: 0 0 1px 0;
+  outline: none!important;
+  padding: 0!important;
+  margin-top: 0.175em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  margin-bottom: 0.375em;
+}
+
+.menu-flyout {
+  position: fixed;
+  display: none;
+  z-index: 2100;
+  background-color: var(--color-bright-background);
+  color: var(--color-foreground);
+  border-radius: 0.25em;
+  border: 1px solid var(--color-dim-foreground);
+  box-shadow: 0 10px 20px rgba(64, 64, 64, 0.15);
+  width: max-content;
+  padding: 0.25em;
+}
+
+.menu-flyout .menu-content {
+  width: max-content;
+  min-width: 10em;
+}

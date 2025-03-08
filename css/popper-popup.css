@@ -1,0 +1,71 @@
+.popper-section {
+  display: flex;
+  align-items: center;
+}
+
+.popper-popup {
+  display: none;
+  box-sizing: content-box;
+  background: var(--color-bright-background);
+  font-weight: bold;
+  font-size: 1em;
+  padding: .325em 0;
+  border-radius: .25em;
+  display: none;
+  width: 100%;
+  min-width: 3em;
+  min-height: 1em;
+  border: 1px solid var(--color-dim-foreground);
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+}
+
+.popper-popup .popper-body {
+  position: relative;
+  display: block;
+}
+.popper-popup[data-popper-reference-hidden] {
+  visibility: hidden;
+  pointer-events: none;
+}
+.popper-popup[show-popper] {
+  display: block;
+  z-index: 9999;
+}
+
+/*build the arrow targeting the divider with class 'popper-arrow'*/
+.popper-arrow, .popper-arrow::before {
+  position: absolute;
+  width: .5em;
+  height: .5em;
+  background: #333333;
+}
+.popper-arrow {
+  visibility: hidden;
+}
+.popper-arrow::before {
+  visibility: visible;
+  content: "";
+  transform: rotate(45deg);
+}
+
+/*position arrow using popper.js data-popper-placement attribute*/
+.popper-popup[data-popper-placement^="top"] .popper-arrow {
+  bottom: -.25em;
+}
+
+.popper-popup[data-popper-placement^="bottom"] .popper-arrow {
+  top: -.25em;
+}
+
+.popper-popup[data-popper-placement^="left"] .popper-arrow {
+  right: -.25em;
+}
+
+.popper-popup[data-popper-placement^="right"] .popper-arrow {
+  left: -.25em;
+}
+
+/*hide arrow when reference outside of viewport*/
+.popper-popup[data-popper-reference-hidden] .popper-arrow::before {
+  visibility: hidden;
+}

@@ -1,0 +1,39 @@
+.dialog-enter-from,
+.dialog-leave-to {
+  opacity: 0;
+}
+
+.dialog-enter-active {
+  transition-timing-function: "ease-out";
+}
+
+.dialog-leave-active {
+  transition-timing-function: "ease-in";
+}
+
+.dialog-enter-active,
+.dialog-leave-active {
+  transition-duration: 200ms;
+}
+
+.dialog-enter-from.dialog-modal,
+.dialog-leave-to.dialog-modal {
+  transform: scale(0.9) translateY(-2rem);
+}
+
+.dialog-modal::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.dialog-modal {
+  position: relative;
+  display: block;
+  min-height: 8em;
+  margin: auto;
+  max-width: 98%;
+  padding: 0;
+  border-radius: .375em;
+  background-color: var(--color-bright-background);
+  border: 1px solid var(--color-dim-foreground);
+  box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+}

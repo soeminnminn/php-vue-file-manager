@@ -1,0 +1,95 @@
+.text-field {
+  font-family: "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system;
+  font-size: 1em;
+  position: relative;
+  display: block;
+  margin-top: 1.2em;
+  padding-top: 1em;
+  box-sizing: border-box;
+  background: rgba(60, 60, 60, 0.02);
+  max-width: 20em;
+  border-radius: .375em;
+}
+
+.text-field * {
+  box-sizing: border-box !important;
+}
+
+.text-field>input {
+  font-size: medium;
+  padding: 0.375em 1em 0.375em 0.375em;
+  display: inline-block;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--color-dim-foreground);
+}
+
+.text-field>input:focus {
+  border-bottom: 1px solid transparent;
+}
+
+.text-field>label {
+  color: var(--color-foreground);
+  font-size: medium;
+  font-weight: normal;
+  position: absolute;
+  pointer-events: none;
+  left: 0.375em;
+  top: 1.5em;
+  opacity: 0.6;
+  transition: 0.2s ease all;
+}
+
+.text-field>input:focus~label,
+.text-field.valid>input~label {
+  top: 0.15em;
+  left: 0.5em;
+  font-size: small;
+  opacity: 1;
+  color: var(--color-primary);
+}
+
+.text-field>.bar {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.text-field>.bar:before,
+.text-field>.bar:after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 0;
+  bottom: 1px;
+  background: var(--color-primary);
+  transition: 0.2s ease all;
+}
+
+.text-field>.bar:before {
+  left: 50%;
+}
+
+.text-field>.bar:after {
+  right: 50%;
+}
+
+.text-field>input:focus~.bar:before,
+.text-field>input:focus~.bar:after {
+  width: 50%;
+}
+
+.text-field>.helper {
+  position: absolute;
+  top: 100%;
+  left: 0.5em;
+  width: 90%;
+  pointer-events: none;
+  opacity: 0.5;
+  font-size: smaller;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

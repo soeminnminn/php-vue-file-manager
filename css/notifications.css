@@ -1,0 +1,198 @@
+.o-notifications-container {
+  box-sizing: content-box;
+  position: fixed;
+  padding: 0;
+  margin: 0 auto;
+  height: fit-content;
+  width: auto;
+  outline: none !important;
+  border: none !important;
+  background: none !important;
+  z-index: 2000;
+}
+
+.o-notification {
+  --o-padding: 0.75em;
+  --o-gap: var(--o-padding);
+  --o-border-width: 1px;
+  --o-border-color: #808080;
+  --o-border-radius: 0.325em;
+  --o-background-color: #242424;
+  --o-color: #EDEDED;
+  --o-success-color: #198754;
+  --o-info-color: #0DCAF0;
+  --o-warning-color: #FFC107;
+  --o-error-color: #DC3545;
+  --o-icon-color: var(--o-color);
+  --y: 0;
+  --s: 1;
+
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: max-content;
+  border: var(--o-border-width) solid var(--o-border-color);
+  border-radius: var(--o-border-radius);
+  background-color: var(--o-background-color);
+  color: var(--o-color);
+  padding: var(--o-padding);
+  overflow: hidden;
+  box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+}
+
+@media (prefers-color-scheme: light) {
+  .o-notification {
+    --o-background-color: #F5F5F5;
+    --o-color: #101010;
+    --o-border-color: #CACACA;
+  }
+}
+
+.o-notification * {
+  box-sizing: border-box;
+}
+
+.o-notification .o-notification-body {
+  display: flex;
+  height: max-content;
+  align-items: flex-start;
+  gap: var(--o-gap);
+  transition: opacity 0.4s ease;
+}
+
+.o-notification .o-notification-icon,
+.o-notification .o-notification-close {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: .25em .25em;
+  color: var(--o-icon-color);
+}
+
+.o-notification .o-notification-close {
+  align-self: center;
+  border: none;
+  outline: none;
+  border-radius: 50% 50%;
+  cursor: pointer;
+  background: transparent;
+  color:#909090;
+}
+
+.o-notification .o-notification-close:hover {
+  background-color: rgba(200, 200, 200, 0.2);
+}
+
+@media (prefers-color-scheme: light) {
+  .o-notification .o-notification-close {
+    color:#606060;
+  }
+
+  .o-notification .o-notification-close:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+.o-notification::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(200, 200, 200, 0.2);
+  opacity: .4;
+  z-index: -1;
+}
+
+.o-notification.type--info {
+  --o-icon-color: var(--o-info-color);
+  --o-border-color: var(--o-info-color);
+}
+
+.o-notification.type--info::before {
+  background: var(--o-info-color);
+}
+
+.o-notification.type--success {
+  --o-icon-color: var(--o-success-color);
+  --o-border-color: var(--o-success-color);
+}
+
+.o-notification.type--success::before {
+  background: var(--o-success-color);
+}
+
+.o-notification.type--warning {
+  --o-icon-color: var(--o-warning-color);
+  --o-border-color: var(--o-warning-color);
+}
+
+.o-notification.type--warning::before {
+  background: var(--o-warning-color);
+}
+
+.o-notification.type--error {
+  --o-icon-color: var(--o-error-color);
+  --o-border-color: var(--o-error-color);
+}
+
+.o-notification.type--error::before {
+  background: var(--o-error-color);
+}
+
+.o-notification .o-notification-content {
+  align-self: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+.o-notification.is--stacked {
+  position: absolute;
+  display: block;
+  transform: translate3d(0, var(--y), 0) scale(var(--s));
+  transition: transform 0.4s ease;
+  bottom: 0;
+}
+
+.o-notification.is--collapsed .o-notification-body {
+  opacity: 0;
+}
+
+.o-notification.is--loading .o-notification-icon {
+  animation: o-notifications-loading 1s linear infinite;
+}
+
+.o-notification .o-notification-title {
+  font-weight: 600;
+}
+
+.o-notification .o-notification-text {
+  font-size: 90%;
+}
+
+.o-notification.v-move,
+.o-notification.v-enter-active,
+.o-notification.v-leave-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.o-notification.v-enter-from,
+.o-notification.v-leave-to {
+  opacity: 0;
+  transform: translate3d(50px, var(--y), 0) scale(var(--s));
+}
+
+.o-notification.v-leave-active {
+  position: absolute;
+}
+
+@keyframes o-notifications-loading {
+  100% {
+    transform: rotate(360deg);
+  }
+}

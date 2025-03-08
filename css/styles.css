@@ -1,0 +1,415 @@
+@import url('./roboto.css');
+@import url('./notifications.css');
+@import url('./popper-popup.css');
+@import url('./splitpanes.css');
+@import url('./text-field.css');
+@import url('./button.css');
+@import url('./toggle-switch.css');
+@import url('./dialog-modal.css');
+@import url('./menu.css');
+@import url('./async-loader.css');
+@import url('./virtual-table.css');
+@import url('./navbar.css');
+@import url('./sidebar.css');
+@import url('./breadcrumb.css');
+
+:root {
+  --color-primary: #3367D6;
+  --color-primary-variant: #254FAE;
+  --color-on-primary: #FFFFFF;
+  --color-secondary: #F5F5F5;
+  --color-secondary-variant: #E8E8E8;
+  --color-on-secondary: #000000;
+
+  --color-background: #0d1117;
+  --color-foreground: #EDEDED;
+  --color-bright-background: #010409;
+  --color-dim-foreground: #3d444d;
+
+  color-scheme: light dark;
+
+  font-family: "Roboto", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-feature-settings: normal;
+  font-variation-settings: normal;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-background: #FAFAFA;
+    --color-foreground: #5A5A5A;
+    --color-bright-background: #FFF;
+    --color-dim-foreground: #d1d9e0;
+  }
+}
+
+html {
+  box-sizing: border-box;
+  -ms-overflow-style: scrollbar;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  color: var(--color-foreground);
+  background: var(--color-background);
+  position: relative;
+  display: block;
+  margin: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+a,
+a:hover,
+a:active, 
+a:focus,
+a:focus-visible,
+a:visited {
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#app {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.container,
+.container-fluid,
+.container-sm,
+.container-md,
+.container-lg,
+.container-xl {
+  position: relative;
+  width: 100%;
+  padding-right: 1em;
+  padding-left: 1em;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 576px) {
+  .container, .container-sm {
+    max-width: 540px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container, .container-sm, .container-md {
+    max-width: 720px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container, .container-sm, .container-md, .container-lg {
+    max-width: 960px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container, .container-sm, .container-md, .container-lg, .container-xl {
+    max-width: 1140px;
+  }
+}
+
+.main {
+  display: block;
+  margin-top: 2.5em;
+  width: 100%;
+  height: calc(100% - 2.5em);
+}
+
+.content-pane {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.main-content {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 0;
+}
+
+.progress-panel {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  padding: 1em 1em;
+  height: 5em;
+  background: var(--color-bright-background);
+  border-top: 1px solid var(--color-dim-foreground);
+}
+
+.progress-panel.hidden {
+  display: none;
+}
+
+.progress-panel .panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5em;
+  height: 3.5em;
+  margin-right: 1em;
+  border-radius: 0.25em;
+  border: 1px solid var(--color-dim-foreground);
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+
+.progress-panel .panel-content {
+  display: flex;
+  flex-grow: 1;
+  flex-flow: column;
+  padding-right: 1em;
+  font-weight: 500;
+}
+
+.progress-panel .panel-title,
+.progress-panel .panel-message {
+  display: block;
+  width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-top: 0.25em;
+  margin-bottom: 0.25em;
+}
+
+.progress-panel .panel-title {
+  font-weight: 600;
+}
+
+.progress-panel .panel-content .panel-progress {
+  display: inline-block;
+  box-sizing: border-box;
+  margin-top: 0.25em;
+  padding: 0.125em;
+  border-radius: 0.25em;
+  background: var(--color-dim-foreground);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08);
+  flex: none;
+  width: 100%;
+  overflow: hidden;
+}
+
+.progress-panel .panel-content .panel-progress .panel-progress-bar {
+  height: .475em;
+  border-radius: 0.25em;
+  background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+  background-color: var(--color-primary);
+}
+
+.progress-panel .panel-content .panel-progress.indeterminate .panel-progress-bar {
+  width: 100%;
+  transform-origin: 0% 50%;
+  animation: indeterminateAnimation 1.2s infinite linear;
+}
+
+@keyframes panelProgressAnimation {
+  0% {
+    transform:  translateX(0) scaleX(0);
+  }
+  40% {
+    transform:  translateX(0) scaleX(0.4);
+  }
+  100% {
+    transform:  translateX(100%) scaleX(0.5);
+  }
+}
+
+.dialog-content .dialog-body {
+  padding: 0.25em 1.5em 1em 1.5em;
+}
+
+.dialog-content .dialog-footer {
+  display: flex;
+  flex-flow: row-reverse;
+  align-items: center;
+  padding: 0.5em 0.5em 1em 1.5em;
+}
+
+.dialog-content .dialog-footer > * {
+  margin-right: 1em;
+}
+
+.placeholder-empty {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-flow: column;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.placeholder-empty > span {
+  font-size: 1.25em;
+  margin-top: 1.5em;
+  opacity: 0.6;
+}
+
+.vt-table * {
+  user-select: none;
+}
+
+.vt-cell > svg {
+  flex: none;
+}
+
+.list-name, .list-size, .list-type, .list-dateModified {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-name {
+  margin-left: 1em;
+  text-decoration: none;
+}
+
+a.list-name {
+  flex-grow: 0;
+}
+
+.list-size {
+  display: inline-block;
+  text-align: right;  
+}
+
+.module-list {
+  --hover-background-color: rgba(240, 240, 240, 0.1);
+  position: relative;
+  display: flex;
+  flex-flow: column;
+  width: 100%;
+  height: 100%;
+  padding: 1em;
+  gap: .75em;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.module-list.lock {
+  pointer-events: none;
+}
+
+.list-group {
+  position: relative;
+  display: flex;
+  gap: .75em;
+  flex-flow: wrap;
+}
+
+.list-group .thumbnail-item {
+  display: inline-flex;
+  flex-flow: column;
+  width: 16em;
+  height: 16em;
+  border: 1px solid var(--color-dim-foreground);
+  border-radius: 0.25em;
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.list-group .thumbnail-item.folder {
+  height: auto;
+  user-select: none;
+}
+
+.list-group .thumbnail-item .thumbnail-item-image {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.list-group .thumbnail-item .thumbnail-item-image > img {
+  user-select: none;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.list-group .thumbnail-item .thumbnail-item-label {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  padding: 1em 0.75em;
+  width: 100%;
+  background: var(--color-bright-background);
+}
+
+.list-group .thumbnail-item .thumbnail-item-label > svg {
+  flex: none;
+}
+
+.list-group .thumbnail-item:hover {
+  background: var(--hover-background-color);
+}
+
+.list-group .thumbnail-item:hover .thumbnail-item-label {
+  background: var(--hover-background-color);
+}
+
+.dropzone {
+  position: relative;
+}
+
+.dropzone > .dropzone-overlay {
+  box-sizing: border-box;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--color-background);
+  z-index: 1010;
+  padding: 2em 2em;
+  display: block;
+  opacity: 0;
+  transition: opacity .2s ease-in-out;
+}
+
+.dropzone.dragover > .dropzone-overlay {
+  opacity: .8;
+}
+
+.dropzone .overlay-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.3125em;
+  width: 100%;
+  height: 100%;
+}
