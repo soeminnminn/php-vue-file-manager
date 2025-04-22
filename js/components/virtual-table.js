@@ -131,6 +131,7 @@ export default {
       innerHeight: 100,
       columnWidths: [],
       rowPressTimer: null,
+      activeRow: -1,
     };
   },
   computed: {
@@ -237,6 +238,8 @@ export default {
     },
     handleRowPointerDown(props) {
       return (ev) => {
+        this.activeRow = this.activeRow == props.itemIndex ? -1 : props.itemIndex;
+
         this.rowPressTimer = setTimeout(() => {
           this.$emit('rowLongPress', props.item, ev);
         }, PRESS_DURATION);
@@ -250,6 +253,8 @@ export default {
     },
     handleRowContextMenu(props) {
       return (e) => {
+        this.activeRow = props.itemIndex;
+        
         this.$emit('rowContextMenu', props.item, e);
       };
     },
@@ -296,7 +301,7 @@ export default {
         ),
         afterContainer: () => (!this.itemsData.length) && emptySlot(),
         default: (props) => h('div', { 
-          class: 'vt-row', 
+          class: {'vt-row': true, 'vt-active': this.activeRow == props.itemIndex}, 
           style: { width: `${this.totalWidth}px`, height: `${this.rowHeightPx}px` }, 
           onclick: this.handleRowClick(props),
           ondblclick: this.handleRowDblClick(props),

@@ -1,7 +1,7 @@
 
 
 .breadcrumb {
-  display: inline-flex;
+  display: flex;
   flex-flow: row;
   align-items: center;
 }
@@ -12,12 +12,30 @@
   flex-flow: row;
   align-items: center;
   text-decoration: none;
+  white-space: nowrap;
 }
 
-.breadcrumb > a:not(:first-child)::before,
-.breadcrumb > span:not(:first-child)::before {
+.breadcrumb > a:not(.ellipsis)::before,
+.breadcrumb > span:not(.ellipsis)::before {
   content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23FFFFFF' d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z'/%3E%3C/svg%3E");
   display: inline-block;
   height: 1.625em;
   padding: 0 .25em 0 .25em;
+}
+
+.breadcrumb > a:nth-child(2)::before,
+.breadcrumb > span:nth-child(2)::before {
+  display: none;
+}
+
+.breadcrumb > .ellipsis {
+  display: none;
+}
+
+.breadcrumb > .ellipsis.show {
+  display: flex;
+}
+
+.breadcrumb > .ellipsis::after {
+  content: "…";
 }

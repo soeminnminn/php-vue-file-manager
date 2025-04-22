@@ -68,6 +68,11 @@ export function uploadFile(url, params, onProgress) {
   });
 }
 
+/**
+ * @param {string} contentType 
+ * @param {string} [extension] 
+ * @returns {string}
+ */
 export function contentTypeToIcon(contentType, extension) {
   if (extension) {
     const ext = extension.toLocaleLowerCase();
@@ -128,6 +133,10 @@ export function formatFileSize(bytes) {
   return pos ? [parseInt(d / 10), ".", d % 10, " ", s[pos]].join('') : bytes + ' bytes';
 }
 
+/**
+ * @param {"name"|"type"|"size"|"mtime"|"date"} sort 
+ * @returns {(a: object, b: object) => -1|0|1}
+ */
 export function filelistComparator(sort) {
   return (a, b) => {
     if (a.isDir && !b.isDir) {

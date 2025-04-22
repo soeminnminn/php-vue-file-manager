@@ -17,6 +17,7 @@
   margin-bottom: .5em;
   color: var(--color-foreground);
   z-index: 1;
+  user-select: none;
 }
 
 .sidebar .nav-item:hover {

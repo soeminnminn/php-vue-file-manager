@@ -75,7 +75,7 @@ export const MenuContent = defineComponent({
   name: 'menu-content',
   render() {
     const defaultSlot = typeof this.$slots === 'function' ? this.$slots : typeof this.$slots.default === 'function' ? this.$slots.default : (() => null);
-    return h('ul', { class: 'menu-content' }, defaultSlot());
+    return h('ul', { class: 'menu-content', oncontextmenu: (ev) => ev.preventDefault() }, defaultSlot());
   }
 });
 

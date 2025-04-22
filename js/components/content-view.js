@@ -1,55 +1,16 @@
-import { h, defineComponent } from 'vue';
+import { h } from 'vue';
 import PlaceholderEmpty from './placeholder-empty.js';
 import VirtualTable from './virtual-table.js';
+import ModuleList from './module-list.js';
 import SvgIcon from './svg-icon.js';
 import { MenuFlyout, MenuItem, MenuSeparator } from './menu.js';
 import { contentTypeToIcon, formatTimestamp, formatFileSize, filelistComparator } from '../lib/utils.js';
-
-const ThumbnailItem = defineComponent({
-  name: 'thumbnail-item',
-  components: {
-    SvgIcon
-  },
-  props: {
-    icon: {
-      type: String,
-      default: 'folder'
-    },
-    item: {
-      type: Object,
-      default: {}
-    },
-  },
-  emits: [ 'dblClick', 'contextMenu' ],
-  methods: {
-    handleDblClick(ev) {
-      this.$emit('dblClick', { row: this.item }, ev);
-    },
-    handleContextMenu(ev) {
-      this.$emit('contextMenu', { row: this.item }, ev);
-    }
-  },
-  render() {
-    return h('div', { class: ['thumbnail-item', this.item.isDir && 'folder' ], 
-        ondblclick: this.handleDblClick, oncontextmenu: this.handleContextMenu }, [
-      !this.item.isDir && h('div', { class: 'thumbnail-item-image' }, 
-        this.item.thumbnail && h('img', { src: this.item.thumbnail, alt: this.item.name })
-      ),
-      h('div', { class: 'thumbnail-item-label' }, [
-        h(SvgIcon, { type: 'filesIcons', d: this.icon, size: 24 }),
-        this.item.isDir ? 
-          h('span', { class: 'list-name' }, this.item.name) : 
-          h('a', { href: this.item.path, target: '_blank', class: 'list-name' }, this.item.name)
-      ]),
-    ]);
-  }
-});
 
 export default {
   name: 'content-view',
   components: {
     VirtualTable,
-    ThumbnailItem,
+    ModuleList,
     PlaceholderEmpty,
     SvgIcon,
     MenuFlyout,
@@ -189,20 +150,14 @@ export default {
       });
       
     } else if (this.view == 'module') {
-      fileView = h('div', { class: ['module-list', this.lockContent && 'lock'] }, this.tableData.length == 0 ?
-        h(PlaceholderEmpty) :
-        [
-          h('div', { class: 'list-group' }, this.tableData.filter(x => x.isDir).map((item, i) => {
-            return h(ThumbnailItem, { key: `thumb-folder-${i}`, icon: 'folder', item, 
-              onDblClick: this.handleRowDblClick, onContextMenu: this.handleRowContextMenu });
-          })),
-          h('div', { class: 'list-group' }, this.tableData.filter(x => !x.isDir).map((item, i) => {
-            const icon = contentTypeToIcon(item.contentType, item.ext);
-            return h(ThumbnailItem, { key: `thumb-${icon}-${i}`, icon, item, 
-              onDblClick: this.handleRowDblClick, onContextMenu: this.handleRowContextMenu });
-          }))
-        ]
-      );
+      fileView = h(ModuleList, {
+        items: this.tableData,
+        lock: this.lockContent,
+        onItemDblClick: this.handleRowDblClick,
+        onItemContextMenu: this.handleRowContextMenu,
+      }, {
+        empty: () => h(PlaceholderEmpty)
+      });
     }
 
     return [

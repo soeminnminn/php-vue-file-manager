@@ -380,6 +380,10 @@ a.list-name {
   background: var(--hover-background-color);
 }
 
+.list-group .thumbnail-item.active .thumbnail-item-label {
+  background: var(--hover-background-color);
+}
+
 .dropzone {
   position: relative;
 }

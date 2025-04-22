@@ -10,7 +10,8 @@ if (@version_compare(PHP_VERSION, '7.1.0', '<')) {
 $xsrf_key = '_sfm_xsrf';
 $hidden_extensions = []; // must be an array of lowercase file extensions. Extensions hidden in directory index
 $exec_files = array('index.html','index.htm','index.php','index.php5','default.aspx','default.asp','index.aspx','index.asp');
-$image_mimes = array('image/apng', 'image/bmp', 'image/gif', 'image/jp2', 'image/jpeg', 'image/png', 'image/webp');
+$image_mimes = array('image/apng', 'image/bmp', 'image/gif', 'image/jp2', 'image/jpeg', 'image/png', 'image/webp', 'image/svg+xml', 'image/vnd.microsoft.icon');
+$thumb_image_mimes = array('image/apng', 'image/bmp', 'image/gif', 'image/jp2', 'image/jpeg', 'image/png', 'image/webp');
 
 $appRoot = @dirname(__FILE__);
 $appPath = './'.@str_replace('\\', '/', @substr($appRoot, @strlen(ROOT) + 1));
@@ -27,7 +28,7 @@ if(@substr($tmp, 0, @strlen(ROOT)) !== ROOT) {
 }
 
 if(!$_COOKIE[$xsrf_key]) {
-	@setcookie($xsrf_key, @bin2hex(openssl_random_pseudo_bytes(16)));
+	@setcookie($xsrf_key, @bin2hex(@openssl_random_pseudo_bytes(16)));
 }
 
 if($_POST) {
@@ -42,8 +43,8 @@ if($_GET['do'] == 'list') {
 	if (@is_dir($file)) {
 		$directory = $file;
 		$is_writable_dir = @is_writable($directory);
-		$result = array();
-		$files = @array_diff(@scandir($directory), array('.','..'));
+		$result = @array();
+		$files = @array_diff(@scandir($directory), @array('.','..'));
 
 		foreach($files as $entry) {
 			$f = @realpath($directory . DIRECTORY_SEPARATOR . $entry);
@@ -51,7 +52,7 @@ if($_GET['do'] == 'list') {
 			
 			$is_hidden = @substr($entry, 0, 1) === '.';
 			$stat = @stat($f);
-			$mime = mime_content_type($f);
+			$mime = @mime_content_type($f);
 			$mode = $stat['mode'];
 			$is_dir = ($mode & 0x4000) == 0x4000; //@is_dir($f);
 			$is_file = ($mode & 0x8000) == 0x8000; //@is_file($f);
@@ -76,20 +77,21 @@ if($_GET['do'] == 'list') {
 				'isReadable' => $is_readable,
 				'isWritable' => $is_writable,
 				// 'isExecutable' => @is_executable($f),
-				'perms' => array(
+				'perms' => @array(
 					'human' => file_perms($mode), 
 					'octal' => @sprintf('0%o', 0777 & $mode),
 				),
 				'executableFile' => null,
-				'thumbnail' => $is_file && is_thumbnail_supported($f, $mime) ? '/?do=thumbnail&file=.' . to_url_path($f) : null,
+				'thumbnail' => $is_file && is_image_file($f, $mime) ? '/?do=thumbnail&file=.' . to_url_path($f) : null,
 			);
 
 			if ($is_dir) {
-				$sub_files = array_diff(@scandir($f), array('.','..'));
+				$sub_files = array_diff(@scandir($f), @array('.','..'));
 				$sub_dirs = [];
 
 				foreach($sub_files as $s_entry) {
 					$sf = @realpath($f . DIRECTORY_SEPARATOR . $s_entry);
+					$sf_mime = @mime_content_type($sf);
 					if (@is_dir($sf)) {
 						if ($is_writable_dir && $is_writable) {
 							$sub_dirs[] = $sf;
@@ -101,7 +103,7 @@ if($_GET['do'] == 'list') {
 						$file_res['executableFile'] = to_url_path($sf);
 					}
 
-					if (!$file_res['thumbnail'] && is_thumbnail_supported($sf, mime_content_type($sf))) {
+					if (!$file_res['thumbnail'] && is_image_file($sf, $sf_mime)) {
 						$file_res['thumbnail'] = '/?do=thumbnail&file=.' . to_url_path($sf);
 					}
 				}
@@ -127,7 +129,7 @@ if($_GET['do'] == 'list') {
 
 	@rename($file, $dest);
 
-	json_response(array('success' => true, 'results' => array(
+	json_response(@array('success' => true, 'results' => @array(
 		'src' => $file,
 		'dest' => $dest,
 		'name' => $file_name,
@@ -137,7 +139,7 @@ if($_GET['do'] == 'list') {
 } elseif ($_POST['do'] == 'delete') {
 	rmrf($file);
 
-	json_response(array('success' => true, 'results' => $file));
+	json_response(@array('success' => true, 'results' => $file));
 	exit;
 
 } elseif ($_POST['do'] == 'mkdir') {
@@ -152,7 +154,7 @@ if($_GET['do'] == 'list') {
 	// @chdir($file);
 	@mkdir($file . DIRECTORY_SEPARATOR . $_POST['name']);
 	
-	json_response(array('success' => true, 'results' => $file.'/'.$dir));
+	json_response(@array('success' => true, 'results' => $file.'/'.$dir));
 	exit;
 
 } elseif ($_POST['do'] == 'copy') {
@@ -162,7 +164,7 @@ if($_GET['do'] == 'list') {
 	
 	@copy($src, $dest);
 
-	json_response(array('success' => true, 'results' => array(
+	json_response(@array('success' => true, 'results' => @array(
 		'src' => $src,
 		'dest' => $dest,
 		'name' => $file_name,
@@ -176,7 +178,7 @@ if($_GET['do'] == 'list') {
 	
 	@rename($src, $dest);
 
-	json_response(array('success' => true, 'results' => array(
+	json_response(@array('success' => true, 'results' => @array(
 		'src' => $src,
 		'dest' => $dest,
 		'name' => $file_name,
@@ -188,24 +190,36 @@ if($_GET['do'] == 'list') {
 	
 	@move_uploaded_file($_FILES['file_data']['tmp_name'], $result);
 
-	json_response(array('success' => true, 'results' => $result));
+	json_response(@array('success' => true, 'results' => $result));
 	exit;
 
 } elseif ($_GET['do'] == 'download') {
 	$filename = @basename($file);
-	header('Content-Type: ' . mime_content_type($file));
-	header('Content-Length: ' . @filesize($file));
-	header(@sprintf('Content-Disposition: attachment; filename=%s',
+	@header('Content-Type: ' . @mime_content_type($file));
+	@header('Content-Length: ' . @filesize($file));
+	@header(@sprintf('Content-Disposition: attachment; filename=%s',
 		@strpos('MSIE', $_SERVER['HTTP_REFERER']) ? @rawurlencode($filename) : "\"$filename\"" ));
-	ob_flush();
+	@ob_flush();
 	@readfile($file);
 	exit;
 
 } elseif ($_GET['do'] == 'thumbnail') {
 	// http://localhost:8080/index.php?do=thumbnail&file=./test/Koala.jpg
-	if (!create_thumbnail($file, 280, 220)) {
-		//
+	$filePath = @realpath($file);
+	
+	if (@is_file($filePath) && @is_readable($filePath)) {
+		$mime = @mime_content_type($filePath);
+
+		if (is_thumbnail_supported($filePath, $mime) && create_thumbnail($filePath, 280, 220) != false) {
+			exit;
+		}
+
+		if (is_image_file($filePath, $mime)) {
+			@header('Content-Type: ' . $mime);
+			@readfile($filePath);
+		}
 	}
+	
 	exit;
 } elseif ($_GET['do'] == 'test') {
 	echo get_absolute_path('/foo/bar/../blar');
@@ -234,14 +248,14 @@ function create_library_path($dir) {
 
 function get_absolute_path($path) {
 	// Cleaning path regarding OS
-	$path = mb_ereg_replace('\\\\|/', DIRECTORY_SEPARATOR, $path, 'msr');
+	$path = @mb_ereg_replace('\\\\|/', DIRECTORY_SEPARATOR, $path, 'msr');
 	// Check if path start with a separator (UNIX)
 	$startWithSeparator = $path[0] === DIRECTORY_SEPARATOR;
 	// Check if start with drive letter
-	preg_match('/^[a-z]:/', $path, $matches);
-	$startWithLetterDir = isset($matches[0]) ? $matches[0] : false;
+	@preg_match('/^[a-z]:/', $path, $matches);
+	$startWithLetterDir = @isset($matches[0]) ? $matches[0] : false;
 	// Get and filter empty sub paths
-	$subPaths = array_filter(explode(DIRECTORY_SEPARATOR, $path), 'mb_strlen');
+	$subPaths = @array_filter(@explode(DIRECTORY_SEPARATOR, $path), 'mb_strlen');
 
 	$absolutes = [];
 	foreach ($subPaths as $subPath) {
@@ -249,20 +263,20 @@ function get_absolute_path($path) {
 			continue;
 		}
 		if ('..' === $subPath && !$startWithSeparator && !$startWithLetterDir
-				&& empty(array_filter($absolutes, function ($value) { return !('..' === $value); }))
+				&& @empty(@array_filter($absolutes, function ($value) { return !('..' === $value); }))
 		) {
 			$absolutes[] = $subPath;
 			continue;
 		}
 		if ('..' === $subPath) {
-			array_pop($absolutes);
+			@array_pop($absolutes);
 			continue;
 		}
 		$absolutes[] = $subPath;
 	}
 
 	return (($startWithSeparator ? DIRECTORY_SEPARATOR : $startWithLetterDir) ?
-					$startWithLetterDir.DIRECTORY_SEPARATOR : '').implode(DIRECTORY_SEPARATOR, $absolutes);
+					$startWithLetterDir.DIRECTORY_SEPARATOR : '').@implode(DIRECTORY_SEPARATOR, $absolutes);
 }
 
 function get_realpath($path, $base = null, $check_exists = false) {
@@ -326,14 +340,14 @@ function to_url_path($f) {
 }
 
 function is_recursively_deleteable($d) {
-	$stack = array_merge($d);
+	$stack = @array_merge($d);
 
 	while($dir = @array_pop($stack)) {
 		if(!@is_readable($dir) || !@is_writable($dir)) {
 			return false;
 		}
 
-		$files = @array_diff(@scandir($dir), array('.','..'));
+		$files = @array_diff(@scandir($dir), @array('.','..'));
 		foreach($files as $file) if(@is_dir($file)) {
 			$stack[] = $dir . DIRECTORY_SEPARATOR . $file;
 		}
@@ -359,14 +373,19 @@ function is_executable_file($path) {
 	return @in_array(@strtolower(@basename($path)), $exec_files);
 }
 
-function is_thumbnail_supported($path, $mime = null) {
+function is_image_file($path, $mime = null) {
 	global $image_mimes;
 	return @in_array($mime, $image_mimes);
 }
 
+function is_thumbnail_supported($path, $mime = null) {
+	global $thumb_image_mimes;
+	return @in_array($mime, $thumb_image_mimes);
+}
+
 function rmrf($dir) {
 	if(@is_dir($dir)) {
-		$files = @array_diff(@scandir($dir), array('.','..'));
+		$files = @array_diff(@scandir($dir), @array('.','..'));
 		foreach ($files as $file) {
 			rmrf("$dir/$file");
 		}
@@ -377,7 +396,7 @@ function rmrf($dir) {
 }
 
 function file_perms($mode) {
-	$ts=array(
+	$ts=@array(
 		0140000 => 'ssocket',
 		0120000 => 'llink',
 		0100000 => '-file',
@@ -388,9 +407,9 @@ function file_perms($mode) {
 	);
 
 	$p = $mode;
-	$t = decoct($mode & 0170000); // File Encoding Bit
+	$t = @decoct($mode & 0170000); // File Encoding Bit
 
-	$str = (array_key_exists(octdec($t), $ts)) ? $ts[octdec($t)][0] : 'u';
+	$str = (@array_key_exists(@octdec($t), $ts)) ? $ts[@octdec($t)][0] : 'u';
 	$str.= (($p & 0x0100) ? 'r' : '-').(($p & 0x0080) ? 'w' : '-');
 	$str.= (($p & 0x0040) ? (($p & 0x0800) ? 's' : 'x') : (($p & 0x0800) ? 'S' : '-'));
 	$str.= (($p & 0x0020) ? 'r' : '-').(($p & 0x0010) ? 'w' : '-');
@@ -402,16 +421,7 @@ function file_perms($mode) {
 }
 
 function create_thumbnail($imageFile, $width, $height) {
-  $path = @realpath($imageFile);
-	
-	if (!@is_file($path) || !@is_readable($path)) return false;
-	$mime = mime_content_type($path);
-
-	if (!is_thumbnail_supported($path, $mime)) {
-		return false;
-	}
-
-  $info = @getimagesize($path);
+  $info = @getimagesize($imageFile);
   if (!$info) {
     return false;
   }
@@ -420,23 +430,23 @@ function create_thumbnail($imageFile, $width, $height) {
 
   switch ($img_type) {
     case IMAGETYPE_GIF:
-      $src_img = @imagecreatefromgif($path);
+      $src_img = @imagecreatefromgif($imageFile);
       break;
 
     case IMAGETYPE_JPEG:
-      $src_img = @imagecreatefromjpeg($path);
+      $src_img = @imagecreatefromjpeg($imageFile);
       break;
 
     case IMAGETYPE_PNG:
-      $src_img = @imagecreatefrompng($path);
+      $src_img = @imagecreatefrompng($imageFile);
       break;
 
     case IMAGETYPE_WEBP:
-      $src_img = @imagecreatefromwebp($path);
+      $src_img = @imagecreatefromwebp($imageFile);
       break;
 
     case IMAGETYPE_BMP:
-      $src_img = @imagecreatefromwbmp($path);
+      $src_img = @imagecreatefromwbmp($imageFile);
       break;
 
     default:
@@ -516,7 +526,7 @@ function create_thumbnail($imageFile, $width, $height) {
 		}
 	}
 
-  header('Content-Type: image/webp');
+  @header('Content-Type: image/webp');
   $result = @imagewebp($dest_img, null, 80);
 
   @imagedestroy($dest_img);
@@ -525,27 +535,27 @@ function create_thumbnail($imageFile, $width, $height) {
 }
 
 function json_response($arr) {
-	header('Access-Control-Allow-Origin: *');
-	header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
-	header('Access-Control-Allow-Headers: X-Requested-With,Authorization,Content-Type');
-	header('Access-Control-Max-Age: 86400');
+	@header('Access-Control-Allow-Origin: *');
+	@header('Access-Control-Allow-Methods: PUT, GET, POST, DELETE, OPTIONS');
+	@header('Access-Control-Allow-Headers: X-Requested-With,Authorization,Content-Type');
+	@header('Access-Control-Max-Age: 86400');
 	
-	if (strtolower($_SERVER['REQUEST_METHOD']) == 'options') {
+	if (@strtolower($_SERVER['REQUEST_METHOD']) == 'options') {
     exit();
 	}
 
-	header('Content-Type: application/json; charset=utf-8');
-	echo json_encode($arr);
+	@header('Content-Type: application/json; charset=utf-8');
+	echo @json_encode($arr);
 }
 
 function err($code, $msg) {
-	json_response(array('error' => array('code'=>intval($code), 'msg' => $msg)));
+	json_response(@array('error' => @array('code'=>@intval($code), 'msg' => $msg)));
 	exit;
 }
 
 function as_bytes($ini_v) {
 	$ini_v = @trim($ini_v);
-	$s = array('g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10);
+	$s = @array('g'=> 1<<30, 'm' => 1<<20, 'k' => 1<<10);
 	return @intval($ini_v) * ($s[@strtolower(@substr($ini_v,-1))] ?: 1);
 }
 
@@ -556,6 +566,8 @@ $MAX_UPLOAD_SIZE = @min(as_bytes(@ini_get('post_max_size')), as_bytes(@ini_get('
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="Pragma" content="no-cache">
+	
   <link rel="icon" href="<?php echo $appPath ?>/favicon.ico" type="image/x-icon" />
 
   <link href="<?php echo $appPath ?>/css/styles.css" rel="stylesheet">

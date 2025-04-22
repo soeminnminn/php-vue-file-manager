@@ -1,6 +1,7 @@
 .vt-table {
   --header-background-color: #151b23;
   --hover-background-color: rgba(240, 240, 240, 0.1);
+  --highlight-background-color: rgba(240, 240, 240, 0.2);
   --row-height: 2.5em;
 
   position: relative;
@@ -15,6 +16,7 @@
   .vt-table {
     --header-background-color: #eee;
     --hover-background-color: rgba(240, 240, 240, 0.5);
+    --highlight-background-color: rgba(200, 200, 200, 0.3);
   }
 }
 
@@ -132,6 +134,10 @@
 
 .vt-table .vt-row:hover {
   background: var(--hover-background-color);
+}
+
+.vt-table .vt-row.vt-active {
+  background: var(--highlight-background-color);
 }
 
 .vt-table .vt-row .vt-cell {
