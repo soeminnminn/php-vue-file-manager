@@ -8,7 +8,7 @@ import ContentView from './components/content-view.js';
 import ProgressPanel from './components/progress-panel.js';
 import NewFolderDialog from './components/new-folder-dialog.js';
 import { ONotificationsContainer } from './lib/notifications/index.js';
-import { filelistComparator } from './lib/utils.js';
+import * as utils from './lib/utils.js';
 
 export default {
   name: 'app',
@@ -38,8 +38,9 @@ export default {
     return {
       getXSRF: () => this.xsrf,
       getApiUrl: () => this.apiUrl,
-      fetchApi: this.fetchApi,
       getCurrentDir: () => this.currentDir,
+      fetchApi: this.fetchApi,
+      uploadFile: this.uploadFile,
     };
   },
   data() {
@@ -71,11 +72,13 @@ export default {
       if (method == 'get') {
         url.searchParams.append('do', cmd);
         if (file) url.searchParams.append('file', file);
+        if (name) url.searchParams.append('name', name);
 
       } else {
         body = new FormData();
         body.append('do', cmd);
         body.append('xsrf', this.xsrf);
+        
         if (file) body.append('file', file);
         if (name) body.append('name', name);
       }
@@ -102,7 +105,7 @@ export default {
           if (json.success) {
             this.isWritable = json.isWritable;
             this.listResults = (json.results || []);
-            this.executableList = this.listResults.filter(x => !!x.executableFile).sort(filelistComparator('name'));
+            this.executableList = this.listResults.filter(x => !!x.executableFile).sort(utils.filelistComparator('name'));
 
           } else if (json.error) {
             console.dir(json);
@@ -110,6 +113,31 @@ export default {
         }).catch((e) => {
           console.error(e);
         });
+    },
+    async uploadFile(file) {
+      const url = new URL(this.apiUrl);
+      const dir = this.currentDir;
+
+      try {
+        await utils.uploadFile(url, {
+          'do': 'upload',
+          'file_data': file,
+          'file': dir,
+          'xsrf': this.xsrf,
+        }, (progress) => {
+          console.log('Upload >>', progress, file.name);
+        });
+
+        this.refreshList();
+
+        this.$notifications.open(`"${file.name}" uploaded`, {
+          title: this.$t('APP_NAME'),
+          icon: 'success',
+          type: 'success',
+        });
+      } catch (e) {
+        console.error(e);
+      }
     },
     handleHashChange() {
       this.currentDir = '.' + (window.location.hash || '#/').slice(1);
@@ -146,13 +174,7 @@ export default {
         h(SplitPane, {}, () => [
           h(Pane, { minSize: 12 }, () => h(Sidebar, { executableList: this.executableList })),
           h(Pane, { minSize: 40, size: 85 }, () => h(UploadContext, { 
-            xsrf: this.xsrf, 
-            apiUrl: this.apiUrl, 
             className: 'content-pane',
-            onStart: () => {},
-            onProgress: () => {},
-            onError: () => {},
-            onSuccess: () => {},
           }, () => [
             h(ContentView, {
               items: this.listResults,
@@ -165,7 +187,11 @@ export default {
           ])),
         ])
       ),
-      h(NewFolderDialog, { open: this.openNewFolderDlg, onShow: (val) => { this.openNewFolderDlg = val; }, onSubmited: () => this.refreshList() }),
+      h(NewFolderDialog, { 
+        open: this.openNewFolderDlg, 
+        onShow: (val) => { this.openNewFolderDlg = val; }, 
+        onSubmited: () => this.refreshList() 
+      }),
       h(ONotificationsContainer, { position: 'top-center' }),
     ];
   }

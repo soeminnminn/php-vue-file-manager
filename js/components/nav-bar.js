@@ -95,6 +95,7 @@ export default {
       default: '/'
     }
   },
+  inject: [ 'uploadFile' ],
   data() {
     return {
       isViewList: false,
@@ -134,7 +135,14 @@ export default {
     },
     handleItemSelectChange(item, ev) {
       if (item == 'upload') {
-        console.dir(ev.target.files);
+        const files = ev.target.files;
+        
+        let file = null;
+        for(file of files) break;
+
+        if (file) {
+          this.$nextTick(() => this.uploadFile(file));
+        }
       }
     },
   },

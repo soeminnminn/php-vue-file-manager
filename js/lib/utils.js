@@ -44,11 +44,17 @@ export function cases(value, sep, firstUpper = false) {
 export function uploadFile(url, params, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    xhr.upload.addEventListener('progress', e => onProgress?.(Math.round(e.loaded / e.total * 100 | 0), e));
+
+    xhr.upload.addEventListener('progress', e => {
+      if (typeof onProgress === 'function') {
+        onProgress(Math.round(e.loaded / e.total * 100 | 0), e);
+      }
+    });
 
     xhr.addEventListener('load', () => resolve({ status: xhr.status, body: xhr.responseText }));
     xhr.addEventListener('error', () => reject(new Error('File upload failed')));
     xhr.addEventListener('abort', () => reject(new Error('File upload aborted')));
+
     xhr.open('POST', url, true);
 
     let formData = new FormData();

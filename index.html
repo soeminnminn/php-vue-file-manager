@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="refresh" content="0; url=/" />
+  <!-- <meta http-equiv="refresh" content="0; url=/" /> -->
    <style>
     body * {
       box-sizing: border-box;
@@ -11,5 +11,47 @@
    </style>
 </head>
 <body>
+  <script>
+    function runXHR(url) {
+      const xhr = new XMLHttpRequest();
+      
+      const handleEvent = (ev) => {
+        console.log(ev.type, `loaded = ${ev.loaded} bytes`, `readystate = ${xhr.readyState}`, `status = ${xhr.status}`);
+      };
+
+      xhr.addEventListener('readystatechange',(ev) => {
+        switch(xhr.readyState) {
+          case XMLHttpRequest.OPENED:
+            break;
+          case XMLHttpRequest.HEADERS_RECEIVED:
+            break;
+          case XMLHttpRequest.LOADING:
+            break;
+          case XMLHttpRequest.DONE:
+            break;
+          default:
+            break;
+        }
+        console.log(ev.type, `readystate = ${xhr.readyState}`, `status = ${xhr.status}`);
+      });
+
+      xhr.addEventListener('loadstart', handleEvent);
+      xhr.addEventListener('load', handleEvent);
+      xhr.addEventListener('loadend', handleEvent);
+      xhr.addEventListener('progress', handleEvent);
+      xhr.addEventListener('error', handleEvent);
+      xhr.addEventListener('abort', handleEvent);
+
+      xhr.open('GET', url);
+      xhr.send();
+      return xhr;
+    }
+
+    window.onload = () => {
+      setTimeout(() => {
+        runXHR('http://localhost:8080/notfound.png');
+      }, 1000);
+    };
+  </script>
 </body>
 </html>

@@ -1,50 +1,12 @@
 import { h } from 'vue';
-import * as utils from '../lib/utils.js';
 
 export default {
   name: 'upload-context',
   props: {
-    xsrf: {
-      type: String,
-      required: true,
-    },
-    apiUrl: {
-      type: String,
-      required: true,
-    },
     className: String,
   },
-  provide() {
-    return {
-      uploadFile: this.uploadFile,
-    };
-  },
-  inject: [ 'getCurrentDir' ],
-  emits: [ 'start', 'progress', 'error', 'success' ],
+  inject: [ 'uploadFile' ],
   methods: {
-    async uploadFile(file) {
-      const url = new URL(this.apiUrl);
-      const dir = this.getCurrentDir();
-
-      const onProgress = (progress) => {
-        this.$emit('progress', progress, file);
-      };
-
-      try {
-        this.$emit('start', file);
-
-        await utils.uploadFile(url, {
-          'do': 'upload',
-          'file_data': file,
-          'file': dir,
-          'xsrf': this.xsrf,
-        }, onProgress);
-
-        this.$emit('success', file);
-      } catch (e) {
-        this.$emit('error', e);
-      }
-    },
     handleDragOver(ev) {
       if (ev.dataTransfer.types.includes('Files')) {
         ev.preventDefault();
